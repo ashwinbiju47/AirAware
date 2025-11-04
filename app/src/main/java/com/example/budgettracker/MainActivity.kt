@@ -69,7 +69,7 @@ fun BudgetTrackerApp() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("Welcome to BudgetTracker!", style = MaterialTheme.typography.titleMedium)
+            Text("Welcome to HomeScreen!", style = MaterialTheme.typography.titleMedium)
         }
     }
 }
