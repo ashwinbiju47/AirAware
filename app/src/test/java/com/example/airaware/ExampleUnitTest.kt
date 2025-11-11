@@ -1,4 +1,4 @@
-package com.example.AirAware
+package com.example.airaware
 
 import org.junit.Test
 
