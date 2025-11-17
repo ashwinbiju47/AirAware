@@ -2,28 +2,30 @@ package com.example.airaware.ui.home.airquality
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.airaware.data.remote.CountryResult
 import com.example.airaware.data.repository.AirQualityRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.example.airaware.BuildConfig
 
 class AirQualityViewModel(
     private val repo: AirQualityRepository = AirQualityRepository()
 ) : ViewModel() {
 
-    private val _aqi = MutableStateFlow<Double?>(null)
-    val aqi: StateFlow<Double?> get() = _aqi
+    private val _countryData = MutableStateFlow<CountryResult?>(null)
+    val countryData: StateFlow<CountryResult?> = _countryData
 
-    fun loadAQI(lat: Double, lon: Double) {
+    fun loadCountry(id: Int) {
+
         viewModelScope.launch {
             try {
-                val data = repo.getAQI(lat, lon)
-                val first = data.results.firstOrNull()
-                val pm25 = first?.measurements?.find { it.parameter == "pm25" }
-                _aqi.value = pm25?.value
+                val response = repo.getCountryDetails(id)
+                _countryData.value = response.results.firstOrNull()
             } catch (e: Exception) {
-                _aqi.value = null
+                _countryData.value = null
             }
         }
     }
+
 }

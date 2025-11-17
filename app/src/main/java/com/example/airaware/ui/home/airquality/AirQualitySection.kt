@@ -11,9 +11,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun AirQualitySection(
     viewModel: AirQualityViewModel = viewModel()
 ) {
-    val aqi by viewModel.aqi.collectAsState()
+    val countryData by viewModel.countryData.collectAsState()
+
+    // Default: India (id=9)
     var expanded by remember { mutableStateOf(false) }
-    var selectedLocation by remember { mutableStateOf(presetLocations.first { it.name == "Delhi" }) }
+    var selectedCountry by remember { mutableStateOf(presetCountries.first { it.id == 9 }) }
+
+    // On first load, fetch India
+    LaunchedEffect(Unit) {
+        viewModel.loadCountry(selectedCountry.id)
+    }
 
     Column(
         modifier = Modifier
@@ -25,20 +32,20 @@ fun AirQualitySection(
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(selectedLocation?.name ?: "Select a Location")
+            Text(selectedCountry.name)
         }
 
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            presetLocations.forEach { location ->
+            presetCountries.forEach { country ->
                 DropdownMenuItem(
-                    text = { Text(location.name) },
+                    text = { Text(country.name) },
                     onClick = {
                         expanded = false
-                        selectedLocation = location
-                        viewModel.loadAQI(location.lat, location.lon)
+                        selectedCountry = country
+                        viewModel.loadCountry(country.id)
                     }
                 )
             }
@@ -51,17 +58,23 @@ fun AirQualitySection(
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
+
                 Text(
-                    text = "Air Quality Index (PM2.5)",
+                    text = "Air Quality Parameters",
                     style = MaterialTheme.typography.titleMedium
                 )
-                Spacer(modifier = Modifier.height(8.dp))
 
-                if (aqi != null) {
-                    Text(
-                        text = "${aqi} µg/m³",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
+                Spacer(modifier = Modifier.height(12.dp))
+                if (countryData != null) {
+                    Text("Country: ${countryData!!.name}")
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text("Available Parameters:")
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    countryData!!.parameters.take(6).forEach { param ->
+                        Text("- ${param.name} (${param.units})")
+                    }
                 } else {
                     Text("No data available")
                 }

@@ -1,11 +1,15 @@
 package com.example.airaware.ui.home.airquality
 
-data class PresetLocation(val name: String, val lat: Double, val lon: Double)
+data class PresetCountry(
+    val id: Int,
+    val name: String,
+    val iso: String
+)
 
-val presetLocations = listOf(
-    PresetLocation("Delhi", 28.6139, 77.2090),
-    PresetLocation("Mumbai", 19.0760, 72.8777),
-    PresetLocation("Bangalore", 12.9716, 77.5946),
-    PresetLocation("Kochi", 9.9312, 76.2673),
-    PresetLocation("Chennai", 13.0827, 80.2707)
+val presetCountries = listOf(
+    PresetCountry(id = 9, name = "India", iso = "IN"),
+    PresetCountry(id = 155, name = "United States", iso = "US"),
+    PresetCountry(id = 79, name = "United Kingdom", iso = "GB"),
+    PresetCountry(id = 177, name = "Australia", iso = "AU"),
+    PresetCountry(id = 50, name = "Germany", iso = "DE")
 )
