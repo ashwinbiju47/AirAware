@@ -5,7 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [User::class], version = 1)
+@Database(
+    entities = [User::class],
+    version = 2,
+    exportSchema = false
+)
 abstract class UserDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 
@@ -18,7 +22,10 @@ abstract class UserDatabase : RoomDatabase() {
                     context.applicationContext,
                     UserDatabase::class.java,
                     "user_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()   // clears old schema conflicts
+                    .build()
+
                 INSTANCE = instance
                 instance
             }

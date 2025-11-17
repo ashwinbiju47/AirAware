@@ -1,36 +1,55 @@
 package com.example.airaware.ui
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.airaware.data.local.User
 import com.example.airaware.ui.auth.AuthScreen
+import com.example.airaware.ui.auth.AuthViewModel
 import com.example.airaware.ui.home.HomeScreen
 import com.example.airaware.ui.splash.SplashScreen
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 @Composable
 fun AppRoot() {
+    val context = LocalContext.current
+    val viewModel: AuthViewModel = viewModel()
+
+    val auth = FirebaseAuth.getInstance()
     var loggedInUser by remember { mutableStateOf<User?>(null) }
     var showSplash by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        delay(300) // Show splash for 1 seconds
+        delay(300)
         showSplash = false
+
+        val firebaseUser = auth.currentUser
+        if (firebaseUser != null) {
+            val localUser = viewModel.getLocalUser(firebaseUser.uid)
+            loggedInUser = localUser
+        }
     }
 
     AnimatedVisibility(
         visible = showSplash,
-        exit = fadeOut(animationSpec = androidx.compose.animation.core.tween(durationMillis = 1000)) // 👈 fade-out
+        exit = fadeOut()
     ) {
         SplashScreen()
     }
 
     if (!showSplash) {
         if (loggedInUser == null) {
-            AuthScreen(onAuthSuccess = { user -> loggedInUser = user })
+            AuthScreen(onAuthSuccess = { loggedInUser = it })
         } else {
-            HomeScreen(user = loggedInUser!!, onLogout = { loggedInUser = null })
+            HomeScreen(
+                user = loggedInUser!!,
+                onLogout = {
+                    viewModel.logout()
+                    loggedInUser = null
+                }
+            )
         }
     }
 }
