@@ -17,6 +17,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField(
+            "String",
+            "OPENAQ_API_KEY",
+            "\"${project.findProperty("OPENAQ_API_KEY") ?: ""}\""
+        )
     }
 
     buildTypes {
@@ -37,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -80,6 +86,11 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-auth")
+
+    // Retrofit + Gson + OkHttp Logging
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.14")
 
     // --- Testing ---
     testImplementation(libs.junit)

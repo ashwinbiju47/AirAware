@@ -1,4 +1,5 @@
 package com.example.airaware.ui
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.*
@@ -41,7 +42,11 @@ fun AppRoot() {
 
     if (!showSplash) {
         if (loggedInUser == null) {
-            AuthScreen(onAuthSuccess = { loggedInUser = it })
+            AuthScreen(
+                onAuthSuccess = { user ->
+                    loggedInUser = user
+                }
+            )
         } else {
             HomeScreen(
                 user = loggedInUser!!,
