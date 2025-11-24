@@ -7,17 +7,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val MatrixLightColorScheme = lightColorScheme(
-    primary = MatrixGreen,
-    secondary = MatrixGreenSecondary,
-    tertiary = MatrixGreen,
-    background = MatrixDarkBackground,
-    surface = MatrixSurface,
-    onPrimary = MatrixOnPrimary,
-    onSecondary = MatrixOnPrimary,
-    onBackground = MatrixOnBackground,
-    onSurface = MatrixOnBackground,
-    error = MatrixError
+private val AirLightColorScheme = lightColorScheme(
+    primary = AirPrimary,
+    secondary = AirSecondary,
+    tertiary = AirPrimary,
+    background = AirBackground,
+    surface = AirSurface,
+    onPrimary = AirOnPrimary,
+    onSecondary = AirOnPrimary,
+    onBackground = AirOnBackground,
+    onSurface = AirOnBackground,
+    error = AirError
 )
 
 @Composable
@@ -31,7 +31,7 @@ fun AirAwareTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        else -> MatrixLightColorScheme
+        else -> AirLightColorScheme
     }
 
     MaterialTheme(

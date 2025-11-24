@@ -13,30 +13,30 @@ val Typography = Typography(
         fontSize = 28.sp,
         lineHeight = 32.sp,
         letterSpacing = 0.sp,
-        color = MatrixOnBackground
+        color = AirOnBackground
     ),
     titleMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
-        color = MatrixOnBackground
+        color = AirOnBackground
     ),
     bodyLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        color = MatrixOnBackground
+        color = AirOnBackground
     ),
     bodyMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        color = MatrixOnBackground
+        color = AirOnBackground
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
-        color = MatrixGreen
+        color = AirPrimary
     )
 )
