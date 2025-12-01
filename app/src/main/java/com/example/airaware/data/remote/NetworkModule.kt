@@ -10,4 +10,11 @@ object NetworkModule {
         .build()
 
     val airService: AirQualityService = retrofit.create(AirQualityService::class.java)
+
+    private val nominatimRetrofit = retrofit2.Retrofit.Builder()
+        .baseUrl("https://nominatim.openstreetmap.org/")
+        .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
+        .build()
+
+    val nominatimService: NominatimService = nominatimRetrofit.create(NominatimService::class.java)
 }

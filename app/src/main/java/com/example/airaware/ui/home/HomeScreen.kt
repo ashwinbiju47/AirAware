@@ -6,6 +6,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +23,9 @@ fun HomeScreen(
     user: User,
     onLogout: () -> Unit
 ) {
+    val viewModel: com.example.airaware.ui.home.airquality.AirQualityViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    val historyList by viewModel.historyList!!.collectAsState(initial = emptyList())
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -50,11 +55,11 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* TODO: Add action */ },
+                onClick = { viewModel.saveCurrentState() },
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
+                Icon(Icons.Default.Add, contentDescription = "Save to History")
             }
         }
     ) { padding ->
@@ -95,7 +100,48 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    AirQualitySection()
+                    AirQualitySection(viewModel = viewModel)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // History Section
+            Text(
+                text = "History",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            androidx.compose.foundation.lazy.LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(historyList.size) { index ->
+                    val item = historyList[index]
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = item.countryName,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = java.text.SimpleDateFormat("MMM dd, yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date(item.timestamp)),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                text = item.details,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
                 }
             }
         }
