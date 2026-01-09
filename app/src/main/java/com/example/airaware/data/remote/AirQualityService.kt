@@ -24,41 +24,23 @@ data class Measurement(
 
 interface AirQualityService {
 
-    @GET("v3/countries/{id}")
-    suspend fun getCountryDetails(
-        @Path("id") countryId: Int,
+    @GET("v3/locations")
+    suspend fun getLocations(
+        @Query("countries_id") countryId: Int,
+        @Query("limit") limit: Int = 100,
+        @Query("order_by") orderBy: String = "id",
+        @Query("sort") sort: String = "desc",
         @Header("X-API-Key") apiKey: String = BuildConfig.OPENAQ_API_KEY
-    ): CountryResponse
+    ): LocationsResponse
+
+    @GET("v3/locations/{id}/latest")
+    suspend fun getLocationLatest(
+        @Path("id") locationId: Int,
+        @Header("X-API-Key") apiKey: String = BuildConfig.OPENAQ_API_KEY
+    ): LatestResponse
 
 
 }
 
 
-data class CountryResponse(
-    val meta: Meta,
-    val results: List<CountryResult>
-)
 
-data class Meta(
-    val name: String,
-    val website: String?,
-    val page: Int,
-    val limit: Int,
-    val found: Int
-)
-
-data class CountryResult(
-    val id: Int,
-    val code: String,
-    val name: String,
-    val datetimeFirst: String?,
-    val datetimeLast: String?,
-    val parameters: List<Parameter>
-)
-
-data class Parameter(
-    val id: Int,
-    val name: String,
-    val units: String,
-    val displayName: String?
-)

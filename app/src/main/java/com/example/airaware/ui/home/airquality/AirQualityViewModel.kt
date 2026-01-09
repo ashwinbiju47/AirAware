@@ -5,8 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.airaware.data.local.HistoryItem
 import com.example.airaware.data.local.UserDatabase
-import com.example.airaware.data.remote.CountryResult
+import com.example.airaware.data.remote.Measurement
 import com.example.airaware.data.repository.AirQualityRepository
+import com.example.airaware.utils.AqiUtils
+import com.example.airaware.utils.AqiResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -25,8 +27,16 @@ class AirQualityViewModel(
 
     val historyList = repo.getHistory()
 
-    private val _countryData = MutableStateFlow<CountryResult?>(null)
-    val countryData: StateFlow<CountryResult?> = _countryData
+
+
+    private val _measurements = MutableStateFlow<List<Measurement>>(emptyList())
+    val measurements: StateFlow<List<Measurement>> = _measurements
+
+    private val _aqiResult = MutableStateFlow<AqiResult?>(null)
+    val aqiResult: StateFlow<AqiResult?> = _aqiResult
+
+    private val _stationName = MutableStateFlow<String?>(null)
+    val stationName: StateFlow<String?> = _stationName
 
     private val _locationState = MutableStateFlow(LocationState())
     val locationState: StateFlow<LocationState> = _locationState
@@ -34,10 +44,24 @@ class AirQualityViewModel(
     fun loadCountry(id: Int) {
         viewModelScope.launch {
             try {
-                val response = repo.getCountryDetails(id)
-                _countryData.value = response.results.firstOrNull()
+                _measurements.value = emptyList()
+                _stationName.value = "Loading..."
+                
+                val (foundStationName, foundMeasurements) = repo.getMeasurementData(id)
+                _stationName.value = foundStationName
+                _measurements.value = foundMeasurements
+                
+                // Calculate AQI
+                val pm25 = foundMeasurements.find { it.parameter == "pm25" }?.value
+                val pm10 = foundMeasurements.find { it.parameter == "pm10" }?.value
+                _aqiResult.value = AqiUtils.calculateAQI(pm25, pm10)
+                
+                // We no longer populate _countryData from the API as it was removed.
+                // Depending on UI needs we might need to fake it or remove it.
+                // For now, let's leave it null or just not use it.
             } catch (e: Exception) {
-                _countryData.value = null
+                _stationName.value = "Error fetching data"
+                _measurements.value = emptyList()
             }
         }
     }
@@ -81,13 +105,14 @@ class AirQualityViewModel(
     }
 
     fun saveCurrentState() {
-        val currentCountry = countryData.value
-        if (currentCountry != null) {
+        val currentStation = stationName.value
+        val currentMeasurements = measurements.value
+        if (currentStation != null && currentMeasurements.isNotEmpty()) {
             viewModelScope.launch {
                 val item = HistoryItem(
-                    countryName = currentCountry.name,
+                    countryName = currentStation,
                     timestamp = System.currentTimeMillis(),
-                    details = "${currentCountry.parameters.size} parameters"
+                    details = "${currentMeasurements.size} parameters"
                 )
                 repo.saveHistory(item)
             }

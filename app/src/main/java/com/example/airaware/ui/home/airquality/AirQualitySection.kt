@@ -7,13 +7,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun AirQualitySection(
     viewModel: AirQualityViewModel = viewModel()
 ) {
-    val countryData by viewModel.countryData.collectAsState()
+    val measurements by viewModel.measurements.collectAsState()
+    val aqiResult by viewModel.aqiResult.collectAsState()
+    val stationName by viewModel.stationName.collectAsState()
     val locationState by viewModel.locationState.collectAsState()
     val context = androidx.compose.ui.platform.LocalContext.current
 
@@ -148,15 +151,50 @@ fun AirQualitySection(
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
-                if (countryData != null) {
-                    Text("Country: ${countryData!!.name}")
+                if (stationName != null) {
+                    Text("Station: $stationName")
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Text("Available Parameters:")
-                    Spacer(modifier = Modifier.height(4.dp))
+                    if (measurements.isNotEmpty()) {
+                        
+                        // AQI Card
+                        if (aqiResult != null) {
+                            Card(
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                                colors = CardDefaults.cardColors(containerColor = aqiResult!!.color)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "AQI: ${aqiResult!!.value}",
+                                        style = MaterialTheme.typography.displayMedium,
+                                        color = Color.White
+                                    )
+                                    Text(
+                                        text = aqiResult!!.level,
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        color = Color.White
+                                    )
+                                    Text(
+                                        text = aqiResult!!.message,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.White,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
 
-                    countryData!!.parameters.take(6).forEach { param ->
-                        Text("- ${param.name} (${param.units})")
+                        Text("Available Parameters:")
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        measurements.forEach { m ->
+                            Text("- ${m.parameter}: ${m.value} ${m.unit}")
+                        }
+                    } else {
+                        Text("No recent data for this station.")
                     }
                 } else {
                     Text("No data available")
